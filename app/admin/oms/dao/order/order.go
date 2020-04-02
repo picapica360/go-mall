@@ -4,19 +4,20 @@ import (
 	"context"
 	"time"
 
-	"mall/app/admin/oms/model/order"
+	"go-mall/app/admin/oms/model/order"
 
-	"mall/lib/database/orm"
-	"mall/lib/log"
+	"go-mall/lib/database/orm"
+	"go-mall/lib/log"
 
 	"github.com/jinzhu/gorm"
 )
 
 const (
-	_insertSQL = ``
-	_insertSQL = ``
+	_insertSQL = `insert into oms_order(id) values(?)`
+	_updateSQL = ``
 )
 
+// Dao dao
 type Dao struct {
 	db *gorm.DB
 }
@@ -30,7 +31,8 @@ func New() *Dao {
 	return d
 }
 
-func (d *Dao) Insert(ctx context.Context, m *Order, now time.Time) (err error) {
+// Insert order
+func (d *Dao) Insert(ctx context.Context, m *order.Param, now time.Time) (err error) {
 	if err = d.db.Exec(_insertSQL, now).Error; err != nil {
 		log.Errorf("d.db.Exec error(%v)", err)
 		return
@@ -38,7 +40,8 @@ func (d *Dao) Insert(ctx context.Context, m *Order, now time.Time) (err error) {
 	return
 }
 
-func (m *Order) Delete() {
+// Delete order
+func (d *Dao) Delete(id int64) {
 
 }
 

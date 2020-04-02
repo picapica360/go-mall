@@ -12,9 +12,9 @@ type Order struct {
 	DeletedAt *time.Time `json:"deletedAt"`
 }
 
-// Param param
+// Param order input param
 type Param struct {
-	ID       int64  `form:"id"`
+	ID int64 `form:"id"`
 }
 
 // TableName return table name

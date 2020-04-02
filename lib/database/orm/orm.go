@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"mall/lib/log"
+	"go-mall/lib/log"
 
 	// MySql driver
 	_ "github.com/go-sql-driver/mysql"
