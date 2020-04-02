@@ -1,15 +1,12 @@
 package order
 
 import (
-	"time"
+	"go-mall/lib/database/orm"
 )
 
 // Order order
 type Order struct {
-	ID        uint64     `gorm:"primary_key" json:"id"`
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	DeletedAt *time.Time `json:"deletedAt"`
+	orm.Model
 }
 
 // Param order input param
@@ -19,5 +16,5 @@ type Param struct {
 
 // TableName return table name
 func (*Order) TableName() string {
-	return "order"
+	return "oms_order"
 }
