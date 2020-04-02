@@ -4,18 +4,25 @@ import (
 	"github.com/bwmarrin/snowflake"
 )
 
+var _node *snowflake.Node
+
+func init() {
+	build(1)
+}
+
 // NewID snowflake
 // +--------------------------------------------------------------------------+
 // | 1 Bit Unused | 41 Bit Timestamp |  10 Bit NodeID  |   12 Bit Sequence ID |
 // +--------------------------------------------------------------------------+
 //
-func NewID(node int64) (id int64, err error) {
+func NewID() int64 {
+	return _node.Generate().Int64()
+}
+
+func build(node int64) {
 	node2, err := snowflake.NewNode(node)
 	if err != nil {
-		return
+
 	}
-
-	id = node2.Generate().Int64()
-
-	return
+	_node = node2
 }

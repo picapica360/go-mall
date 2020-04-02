@@ -15,8 +15,8 @@ func Debug(args ...interface{}) {
 }
 
 // Debugf info format log
-func Debugf(template string, args ...interface{}) {
-	logger.Debugf(template, args...)
+func Debugf(format string, args ...interface{}) {
+	logger.Debugf(format, args...)
 }
 
 // Info info log
@@ -25,8 +25,8 @@ func Info(args ...interface{}) {
 }
 
 // Infof info format log
-func Infof(template string, args ...interface{}) {
-	logger.Infof(template, args...)
+func Infof(format string, args ...interface{}) {
+	logger.Infof(format, args...)
 }
 
 // Warn warn log
@@ -35,8 +35,8 @@ func Warn(args ...interface{}) {
 }
 
 // Warnf warn format log
-func Warnf(template string, args ...interface{}) {
-	logger.Warnf(template, args...)
+func Warnf(format string, args ...interface{}) {
+	logger.Warnf(format, args...)
 }
 
 // Error error log
@@ -45,8 +45,8 @@ func Error(args ...interface{}) {
 }
 
 // Errorf error format log
-func Errorf(template string, args ...interface{}) {
-	logger.Errorf(template, args...)
+func Errorf(format string, args ...interface{}) {
+	logger.Errorf(format, args...)
 }
 
 // Panic panic log
@@ -55,8 +55,8 @@ func Panic(args ...interface{}) {
 }
 
 // Panicf panic format log
-func Panicf(template string, args ...interface{}) {
-	logger.Panicf(template, args...)
+func Panicf(format string, args ...interface{}) {
+	logger.Panicf(format, args...)
 }
 
 // Fatal log message, and call os.Exist.
@@ -65,8 +65,8 @@ func Fatal(args ...interface{}) {
 }
 
 // Fatalf log format message, and call os.Exist.
-func Fatalf(template string, args ...interface{}) {
-	logger.Fatalf(template, args...)
+func Fatalf(format string, args ...interface{}) {
+	logger.Fatalf(format, args...)
 }
 
 // Build  build the logger.
