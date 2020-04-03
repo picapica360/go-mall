@@ -1,0 +1,18 @@
+# About toml, see https://github.com/BurntSushi/toml.
+
+version = "1.0.0"
+
+## this log config is for log file.
+[log]
+filepath = "/logs/2020-01-03.log"
+maxsize = 100  # M
+maxage = 30 # day
+maxbackups = 10
+compress = true
+
+[database]
+dialect = "mysql"
+dsn = "123"
+# active = 100
+# idle = 30
+# idleTimeout = "30s"

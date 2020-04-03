@@ -25,12 +25,6 @@ func init() {
 	gorm.DefaultCallback.Delete().Replace("gorm:delete", deleteCallback)
 }
 
-// NewMySQL new db and retry connection when has error.
-func NewMySQL(c *Config) (db *gorm.DB) {
-	c.Dialect = "mysql"
-	return NewDB(c)
-}
-
 // NewDB create a new db connection.
 // Firstly, must import driver in main().
 // eg:

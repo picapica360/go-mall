@@ -17,20 +17,19 @@ var (
 	extension = ".toml"
 )
 
-var conf AppConfig
+var conf *AppConfig // global
 
-// Init initialize the config, use the 'app.[env].conf' file in root directory.
-func Init() {
+func init() {
 	var once sync.Once
 	once.Do(func() {
-		DecodeToml(configFilename(env.Env()), &conf)
+		decodeToml(configFilename(env.Env()), conf)
 	})
 }
 
-// DecodeToml decodes the content in toml file to struct.
+// decodeToml decodes the content in toml file to struct.
 // filename is the file name in root directory.
 // v is pointer of struct.
-func DecodeToml(filename string, v interface{}) {
+func decodeToml(filename string, v interface{}) {
 	fpath := path.Join(env.Root(), filename)
 	if _, err := os.Stat(fpath); err != nil {
 		if os.IsNotExist(err) {
@@ -47,8 +46,9 @@ func DecodeToml(filename string, v interface{}) {
 }
 
 // Conf get the config from the 'app.[env].conf' file in root.
+// note: the config would be built when app init, and store singleton.
 func Conf() *AppConfig {
-	return &conf
+	return conf
 }
 
 func configFilename(env string) string {

@@ -1,5 +1,9 @@
 package diagnostics
 
+import (
+	"sync"
+)
+
 // TraceFunc trace function handler.
 type traceFunc func(interface{}, error)
 
@@ -8,7 +12,6 @@ var listeners map[string]traceFunc
 
 func init() {
 	listeners = make(map[string]traceFunc)
-	innerRegister()
 }
 
 // IsEnabled check the event whether has been registered.
@@ -53,4 +56,18 @@ func RegisterFunc(name string, f func(interface{}, error)) {
 		panic("[diagnostics] the register function is nil")
 	}
 	listeners[name] = traceFunc(f)
+}
+
+// Traces get all listeners.
+func Traces() []string {
+	rmutex := sync.RWMutex{}
+	rmutex.RLock()
+	defer rmutex.RUnlock()
+
+	ts := make([]string, len(listeners))
+	for k := range listeners {
+		ts = append(ts, k)
+	}
+
+	return ts
 }
