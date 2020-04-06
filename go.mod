@@ -10,6 +10,7 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/uuid v1.1.1
 	github.com/jinzhu/gorm v1.9.12
+	github.com/robfig/cron v1.2.0
 	go.uber.org/zap v1.14.1
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

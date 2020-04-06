@@ -9,15 +9,6 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-// Config config for logger.
-type Config struct {
-	Filepath   string
-	MaxSize    int
-	MaxBackups int
-	MaxAge     int
-	Compress   bool
-}
-
 // NewFileAdapter create a logger adapter for file logger.
 // eg: { "filepath": "../logs/example.log", "maxsize": 100, "maxage": 30, "maxbackups": 10, "compress": true }
 // remark: 	filepath    日志文件路径, 为 empty 使用将采用 os.TempDir() 临时目录

@@ -12,6 +12,6 @@ const (
 )
 
 // User 获取用户信息
-func (repo *Repository) User(c context.Context, username string) (user *model.User, err error) {
+func (repo *repoImpl) User(c context.Context, username string) (user *model.User, err error) {
 	return
 }

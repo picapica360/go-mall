@@ -6,37 +6,39 @@ import (
 
 	"go-mall/app/admin/ums/repository"
 	"go-mall/lib/database/orm"
-
-	"github.com/jinzhu/gorm"
 )
 
-// Service ums service.
-type Service struct {
+// svcImpl ums service. the implement for Service.
+type svcImpl struct {
 	repo repository.Repository
 
-	db    *gorm.DB
 	mutex sync.RWMutex
 }
 
 // New a service
-func New(c *orm.Config) s *Service) {
-	db := orm.NewDB()
-	s = &Service{
+func New(c *orm.Config) (s *Service) {
+	db := orm.NewDB(c)
+	s = &svcImpl{
 		repo: repository.New(db),
-		db:   db,
 	}
 	return
 }
 
-// Ping Service
-func (s *Service) Ping(c context.Context) (err error) {
-	err = s.db.DB().PingContext(c)
+// Ping ping
+func (s *svcImpl) Ping(c context.Context) (err error) {
+	err = s.repo.Ping(c)
 	return
 }
 
-// Close the service
-func (s *Service) Close() {
-	if s.db != nil {
-		s.db.Close()
-	}
+// Close 关闭并释放所有占用的资源
+func (s *svcImpl) Close() {
+	s.repo.Close()
+}
+
+// Service interface
+type Service interface {
+	Ping(context.Context) error
+	Close()
+
+	// 业务
 }
