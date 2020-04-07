@@ -5,7 +5,8 @@ import (
 	"sync"
 
 	"go-mall/app/admin/ums/repository"
-	"go-mall/lib/database/orm"
+
+	"github.com/jinzhu/gorm"
 )
 
 // svcImpl ums service. the implement for Service.
@@ -15,11 +16,17 @@ type svcImpl struct {
 	mutex sync.RWMutex
 }
 
+var _ Service = &svcImpl{} // compile check
+
+// Config 服务配置
+type Config struct {
+	DB *gorm.DB
+}
+
 // New a service
-func New(c *orm.Config) (s *Service) {
-	db := orm.NewDB(c)
+func New(c *Config) (s Service) {
 	s = &svcImpl{
-		repo: repository.New(db),
+		repo: repository.New(c.DB),
 	}
 	return
 }

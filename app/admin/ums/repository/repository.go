@@ -13,17 +13,19 @@ type repoImpl struct {
 	db *gorm.DB // read and write database.
 }
 
+var _ Repository = &repoImpl{} // compile check
+
 // New 创建一个新的仓储
-func New(db *gorm.DB) (repo *Repository) {
+func New(db *gorm.DB) (repo Repository) {
 	repo = &repoImpl{
-		DB: db,
+		db: db,
 	}
 	return
 }
 
 // Ping ping
 func (repo *repoImpl) Ping(ctx context.Context) error {
-	return repo.db.PingContext(ctx)
+	return repo.db.DB().PingContext(ctx)
 }
 
 // Close the repository.
@@ -31,7 +33,7 @@ func (repo *repoImpl) Ping(ctx context.Context) error {
 // 在驱动 "database/sql" 内部会维护一个连接池，使用者不需要管连接的创建和关闭。
 func (repo *repoImpl) Close() {
 	if repo.db != nil {
-		repo.db.DB.Close()
+		repo.db.DB().Close()
 	}
 }
 

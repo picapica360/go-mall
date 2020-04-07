@@ -1,4 +1,4 @@
-package route
+package endpoint
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,7 +6,7 @@ import (
 
 // Init the `oms` route.
 func Init(eng *gin.Engine) {
-	router := eng.Group("/admin/oms")
+	router := eng.Group("/admin/cms")
 	{
 		router.POST("/", nil)
 	}
