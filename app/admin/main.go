@@ -12,8 +12,7 @@ import (
 	"go-mall/lib/config"
 	"go-mall/lib/database/orm"
 	"go-mall/lib/log"
-
-	"github.com/gin-gonic/gin"
+	httpd "go-mall/lib/net/http"
 
 	_ "net/http/pprof"
 
@@ -46,7 +45,7 @@ func main() {
 		}
 	}()
 
-	engine := gin.Default() // middleware Logger, Recovery
+	engine := httpd.Default() // middleware Logger, Recovery
 	omsendpoint.Init(engine)
 	pmsendpoint.Init(engine)
 	cmsendpoint.Init(engine)
