@@ -22,10 +22,20 @@ func init() {
 // 	_ "github.com/jinzhu/gorm/dialects/postgres"
 // 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 func NewDB(c *Config) *gorm.DB {
-	db, err := gorm.Open(c.Dialect, c.DSN) // 数据库连接前的初始化，
-	if err != nil {
+	db := newDB(c, func(err error) {
 		log.Errorf("db dsn(%s) error: %v", c.DSN, err)
 		panic(err)
+	})
+	db.SetLogger(ormLog{})
+	db.SingularTable(true)
+
+	return db
+}
+
+func newDB(c *Config, errHandle func(err error)) *gorm.DB {
+	db, err := gorm.Open(c.Dialect, c.DSN) // 数据库连接前的初始化，
+	if err != nil {
+		errHandle(err)
 	}
 
 	if c.Idle > 0 {
@@ -37,10 +47,6 @@ func NewDB(c *Config) *gorm.DB {
 	if c.IdleTimeout > time.Duration(0) {
 		db.DB().SetConnMaxLifetime(c.IdleTimeout)
 	}
-
-	db.SetLogger(ormLog{})
-
-	db.SingularTable(true)
 
 	return db
 }

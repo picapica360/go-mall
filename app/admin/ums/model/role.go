@@ -2,17 +2,19 @@ package model
 
 import "time"
 
-// Role role
+// Role 后台用户角色
 type Role struct {
-	ID        int64      `gorm:"primary_key" json:"id"`
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	DeletedAt *time.Time `json:"deletedAt"`
+	ID        int       `gorm:"primary_key" json:"id"`
+	Name      string    `json:"name"`       // 角色
+	Desc      string    `json:"desc"`       // 角色描述
+	Status    bool      `json:"status"`     // 启用状态：0->禁用；1->启用'
+	Sort      int       `json:"sort"`       // 排序
+	CreatedAt time.Time `json:"created_at"` // 创建时间
 }
 
-// RoleParam role input param
-type RoleParam struct {
-	ID int64 `form:"id"`
+// RoleInParam role input param
+type RoleInParam struct {
+	ID int `form:"id"`
 }
 
 // TableName return table name

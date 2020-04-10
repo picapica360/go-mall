@@ -44,5 +44,5 @@ type Repository interface {
 	Close()
 
 	// 业务
-	User(c context.Context, username string) (user *model.User, err error)
+	Member(c context.Context, username string) (member *model.Member, err error)
 }

@@ -22,14 +22,19 @@ var (
 )
 
 func init() {
-	setEnv(os.Getenv("PICAPICA_ENV"))
+	setRoot()
+	SetEnv(os.Getenv("PICAPICA_ENV"))
 }
 
-func setEnv(e string) {
+// SetEnv set environment.
+func SetEnv(e string) {
 	if len(e) > 0 {
 		env = e
 	}
+}
 
+// set the workplace.
+func setRoot() {
 	var err error
 	root, err = os.Getwd()
 	if err != nil {

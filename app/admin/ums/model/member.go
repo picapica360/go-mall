@@ -6,30 +6,30 @@ import (
 
 // Member 会员
 type Member struct {
-	ID                    int64     `gorm:"primary_key" json:"id"`
-	Username              string    `json:"username"`
-	Password              string    `json:"password"`
-	Nickname              string    `json:"nickname"`
-	Phone                 string    `json:"phone"`
-	Status                bool      `json:"status"`
-	Icon                  string    `json:"icon"`
-	Gender                int       `json:"gender"` // 性别：0->未知；1->男；2->女
-	Birthday              time.Time `json:"birthday"`
-	City                  string    `json:"city"`
-	Job                   string    `json:"job"`
-	PersonalizedSignature string    `gorm:"column:personalized_signature" json:"personalized_signature"`
-	SourceType            string    `gorm:"column:source_type" json:"source_type"`
-	Integration           int       `json:"integration"`
-	Growth                int       `json:"growth"`
-	CreatedAt             time.Time `json:"created_at"`
-	UpdatedAt             time.Time `json:"updated_at"`
+	ID          int64     `gorm:"primary_key" json:"id"`                 // id
+	Username    string    `json:"username"`                              // 用户名
+	Password    string    `json:"password"`                              // 密码
+	Nickname    string    `json:"nickname"`                              // 昵称
+	Phone       string    `json:"phone"`                                 // 手机号
+	Status      bool      `json:"status"`                                // 帐号启用状态:0->禁用；1->启用
+	Icon        string    `json:"icon"`                                  // 头像
+	Gender      int       `json:"gender"`                                // 性别：0->未知；1->男；2->女
+	Birthday    time.Time `json:"birthday"`                              // 出生日期
+	City        string    `json:"city"`                                  // 所在城市
+	Job         string    `json:"job"`                                   // 职业
+	Signature   string    `gorm:"column:signature" json:"signature"`     // 个性签名
+	SourceType  string    `gorm:"column:source_type" json:"source_type"` // 用户来源
+	Integration int       `json:"integration"`                           // 积分
+	Growth      int       `json:"growth"`                                // 成长值
+	CreatedAt   time.Time `json:"created_at"`                            // 创建时间
+	UpdatedAt   time.Time `json:"updated_at"`                            // 修改时间
 }
 
-// MemberParam member input param
-type MemberParam struct {
+// MemberInParam member input param
+type MemberInParam struct {
 }
 
 // TableName return table name
 func (*Member) TableName() string {
-	return tablePrefix + "user"
+	return tablePrefix + "member"
 }

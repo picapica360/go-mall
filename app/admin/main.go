@@ -1,6 +1,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"net/http"
 
 	cmsendpoint "go-mall/app/admin/cms/endpoint"
@@ -10,6 +12,7 @@ import (
 	umsendpoint "go-mall/app/admin/ums/endpoint"
 
 	"go-mall/lib/config"
+	"go-mall/lib/config/env"
 	"go-mall/lib/database/orm"
 	"go-mall/lib/log"
 	httpd "go-mall/lib/net/http"
@@ -20,7 +23,18 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+var (
+	svcPort int
+	svcEnv  string
+)
+
 func main() {
+	flag.IntVar(&svcPort, "port", 5000, "set the service host port")
+	flag.StringVar(&svcEnv, "env", "", `set the service rumtime environment, like 'development','test','production'`)
+	flag.Parse()
+
+	env.SetEnv(svcEnv) // 覆盖环境变量中的值
+
 	// only listening for pprof
 	go func() {
 		http.ListenAndServe(":6060", nil)
@@ -56,5 +70,5 @@ func main() {
 		Engine: engine,
 	})
 
-	log.Panic(engine.Run(":5000")) // log if starting error.
+	log.Panic(engine.Run(fmt.Sprintf(":%d", svcPort))) // log if starting error.
 }

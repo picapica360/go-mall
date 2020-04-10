@@ -1,5 +1,5 @@
 package model
 
 const (
-	tablePrefix = "ums_"
+	tablePrefix = "ums_" // ums_
 )
