@@ -7,7 +7,7 @@ type Role struct {
 	ID        int       `gorm:"primary_key" json:"id"`
 	Name      string    `json:"name"`       // 角色
 	Desc      string    `json:"desc"`       // 角色描述
-	Status    bool      `json:"status"`     // 启用状态：0->禁用；1->启用'
+	Enabled   bool      `json:"enabled"`    // 启用状态：0->禁用；1->启用'
 	Sort      int       `json:"sort"`       // 排序
 	CreatedAt time.Time `json:"created_at"` // 创建时间
 }

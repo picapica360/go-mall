@@ -5,10 +5,10 @@ import "time"
 // Resource 后台资源
 type Resource struct {
 	ID         int       `gorm:"primary_key" json:"id"`
+	CategoryID int       `json:"category_id"` // 资源分类 id, ref->ResourceCategory
 	Name       string    `json:"name"`        // 资源名称
-	URI        string    `json:"uri"`         // 资源URI
+	URL        string    `json:"url"`         // 资源URL
 	Desc       string    `json:"desc"`        // 描述
-	CategoryID int       `json:"category_id"` // 资源分类 id, ref: ResourceCategory
 	CreatedAt  time.Time `json:"created_at"`  // 创建时间
 }
 

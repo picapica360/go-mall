@@ -9,9 +9,9 @@ CREATE DATABASE IF NOT EXISTS `mall` default character set utf8 collate utf8_gen
 USE mall;
 
 
-/******************************/
-/********** 用户模块 **********/
-/******************************/
+/****************************************************************************************************/
+/********************************************** 用户模块 ********************************************/
+/****************************************************************************************************/
 
 -- ----------------------------
 -- Table ums_admin 后台用户表(管理员)
@@ -25,9 +25,9 @@ CREATE TABLE `ums_admin` (
   `email` varchar(100) COMMENT '邮箱',
   `nickname` varchar(32) COMMENT '昵称',
   `note` varchar(256) COMMENT '备注信息',
+  `enabled` tinyint(1) NOT NULL DEFAULT '1' COMMENT '帐号启用状态：0->禁用；1->启用'
   `created_at` datetime NOT NULL COMMENT '创建时间',
   `login_at` datetime NOT NULL COMMENT '最后登录时间',
-  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '帐号启用状态：0->禁用；1->启用'
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='后台用户表';
 
 -- ----------------------------
@@ -36,11 +36,11 @@ CREATE TABLE `ums_admin` (
 DROP TABLE IF EXISTS `ums_admin_login_log`;
 CREATE TABLE `ums_admin_login_log` (
   `id` bigint(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
-  `admin_id` bigint(10) COMMENT '用户 ID',
+  `admin_id` bigint(10) COMMENT '用户id, ref->ums_admin',
   `ip` varchar(64) NOT NULL COMMENT '用户登录的 IP 地址, IPv4 或 IPv6',
   `address` varchar(100) COMMENT '',
   `user_agent` varchar(100) COMMENT '浏览器登录类型',
-  `created_at` datetime COMMENT '创建时间'
+  `created_at` datetime NOT NULL COMMENT '创建时间'
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='后台用户登录日志表';
 
 -- ----------------------------
@@ -49,8 +49,8 @@ CREATE TABLE `ums_admin_login_log` (
 DROP TABLE IF EXISTS `ums_admin_permission_relation`;
 CREATE TABLE `ums_admin_permission_relation` (
   `id` int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
-  `admin_id` int(10) NOT NULL COMMENT '用户 id',
-  `permission_id` int(10) NOT NULL COMMENT '权限 id'
+  `admin_id` int(10) NOT NULL COMMENT '用户id, ref->ums_admin',
+  `permission_id` int(10) NOT NULL COMMENT '权限id, ref->ums_permission'
 ) ENGINE=InnoDB AUTO_INCREMENT=1 CHARSET=utf8 COMMENT='后台用户和权限关系表(除角色中定义的权限以外的加减权限)';
 
 -- ----------------------------
@@ -59,8 +59,8 @@ CREATE TABLE `ums_admin_permission_relation` (
 DROP TABLE IF EXISTS `ums_admin_role_relation`;
 CREATE TABLE `ums_admin_role_relation` (
   `id` int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
-  `admin_id` int(10) NOT NULL COMMENT '用户id',
-  `role_id` int(10) NOT NULL COMMENT '角色id'
+  `admin_id` int(10) NOT NULL COMMENT '用户id, ref->ums_admin',
+  `role_id` int(10) NOT NULL COMMENT '角色id, ref->ums_role'
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='后台用户和角色关系表';
 
 -- ----------------------------
@@ -69,7 +69,7 @@ CREATE TABLE `ums_admin_role_relation` (
 DROP TABLE IF EXISTS `ums_member`;
 CREATE TABLE `ums_member` (
   `id` bigint(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
-  `member_level_id` int(10) NOT NULL COMMENT '会员等级',
+  `member_level_id` int(10) NOT NULL COMMENT '会员等级, ref->ums_member_level',
   `username` varchar(64) NOT NULL COMMENT '用户名',
   `password` varchar(64) NOT NULL COMMENT '密码',
   `nickname` varchar(64) NOT NULL COMMENT '昵称',
@@ -117,7 +117,7 @@ CREATE TABLE `ums_member_level` (
 DROP TABLE IF EXISTS `ums_member_login_log`;
 CREATE TABLE `ums_member_login_log` (
   `id` bigint(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
-  `member_id` bigint(10) NOT NULL COMMENT '会员 id',
+  `member_id` bigint(10) NOT NULL COMMENT '会员 id, ref->ums_member',
   `created_at` datetime NOT NULL COMMENT '登录时间',
   `ip` varchar(64) NOT NULL COMMENT '登录的 ip',
   `city` varchar(64) COMMENT '登录时所在的城市',
@@ -131,7 +131,7 @@ CREATE TABLE `ums_member_login_log` (
 DROP TABLE IF EXISTS `ums_member_receive_address`;
 CREATE TABLE `ums_member_receive_address` (
   `id` bigint(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
-  `member_id` bigint(10) NOT NULL COMMENT '会员 id',
+  `member_id` bigint(10) NOT NULL COMMENT '会员 id, ref->ums_member',
   `name` varchar(100) NOT NULL COMMENT '收货人名称',
   `phone` varchar(64) NOT NULL COMMENT '电话',
   `postcode` varchar(100) COMMENT '邮政编码',
@@ -149,7 +149,7 @@ CREATE TABLE `ums_member_receive_address` (
 DROP TABLE IF EXISTS `ums_member_stats`;
 CREATE TABLE `ums_member_stats` (
   `id` bigint(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
-  `member_id` NOT NULL COMMENT '会员 id',
+  `member_id` NOT NULL COMMENT '会员 id, ref->ums_member',
   `consume_amount` decimal(10,2) NOT NULL DEFAULT 0 COMMENT '累计消费金额',
   `order_count` int(11) NOT NULL DEFAULT 0 COMMENT '订单数量',
   `coupon_count` int(11) NOT NULL DEFAULT 0 COMMENT '优惠券数量',
@@ -166,38 +166,6 @@ CREATE TABLE `ums_member_stats` (
   `recent_order_time` datetime COMMENT '最后一次下订单时间'
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='会员统计信息';
 
--- ----------------------------
--- Table ums_menu 后台菜单表
--- ----------------------------
-DROP TABLE IF EXISTS `ums_menu`;
-CREATE TABLE ums_menu (
-  `id` int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
-  `pid` int(10) COMMENT '父级ID',
-  `title` varchar(100) NOT NULL COMMENT '菜单名称',
-  `level` int(4) NOT NULL COMMENT '菜单级数',
-  `sort` int(4) NOT NULL COMMENT '菜单排序',
-  `name` varchar(100) COMMENT '前端名称',
-  `icon` varchar(200) COMMENT '前端图标',
-  `is_hidden` tinyint(1) NOT NULL DEFAULT 0 COMMENT '前端隐藏: 0->不隐藏;1->隐藏',
-  `created_at` datetime NOT NULL COMMENT '创建时间'
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='后台菜单表';
-
--- ----------------------------
--- Table ums_permission 后台用户权限表
--- ----------------------------
-DROP TABLE IF EXISTS ums_permission;
-CREATE TABLE ums_permission (
-  `id` int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
-  `pid` int(10) COMMENT '父级权限id',
-  `name` varchar(100) COMMENT '名称',
-  `value` varchar(128) COMMENT '权限值',
-  `icon` varchar(128) COMMENT '图标',
-  `type` int(1) NOT NULL COMMENT '权限类型：0->目录；1->菜单；2->按钮（接口绑定权限）',
-  `uri` varchar(128) COMMENT '前端资源路径',
-  `enabled` tinyint(1) NOT NULL DEFAULT 1 COMMENT '启用状态；0->禁用；1->启用',
-  `sort` int(11) NOT NULL DEFAULT 0 COMMENT '排序',
-  `created_at` datetime NOT NULL COMMENT '创建时间'
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='后台用户权限表';
 
 -- ----------------------------
 -- Table ums_role 后台用户角色表
@@ -208,9 +176,68 @@ CREATE TABLE `ums_role` (
   `name` varchar(100) NOT NULL COMMENT '名称',
   `desc` varchar(256) COMMENT '描述',
   `enabled` tinyint(1) NOT NULL DEFAULT 1 COMMENT '启用状态：0->禁用；1->启用',
-  `sort` int(11) NOT NULL DEFAULT 0 COMMENT '排序',
+  `sort` int(4) NOT NULL COMMENT '排序',
   `created_at` datetime NOT NULL COMMENT '创建时间'
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='后台用户角色表';
+
+-- ----------------------------
+-- Table ums_menu 后台菜单表
+-- ----------------------------
+DROP TABLE IF EXISTS `ums_menu`;
+CREATE TABLE ums_menu (
+  `id` int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
+  `pid` int(10) NOT NULL COMMENT '父级ID, 0 表示最top',
+  `title` varchar(100) NOT NULL COMMENT '菜单名称',
+  `level` int(4) NOT NULL COMMENT '菜单级数',
+  `sort` int(4) NOT NULL COMMENT '菜单排序',
+  `name` varchar(100) NOT NULL COMMENT '前端名称',
+  `icon` varchar(200) COMMENT '前端图标',
+  `is_hidden` tinyint(1) NOT NULL DEFAULT 0 COMMENT '前端隐藏: 0->不隐藏;1->隐藏',
+  `created_at` datetime NOT NULL COMMENT '创建时间'
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='后台菜单表';
+
+-- ----------------------------
+-- Table ums_permission 后台用户权限表
+-- ----------------------------
+DROP TABLE IF EXISTS `ums_permission`;
+CREATE TABLE `ums_permission` (
+  `id` int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
+  `pid` int(10) NOT NULL COMMENT '父级权限id, 0 表示最top',
+  `name` varchar(100) NOT NULL COMMENT '名称',
+  `value` varchar(128) COMMENT '权限值',
+  `icon` varchar(128) COMMENT '图标',
+  `kind` int(1) NOT NULL COMMENT '权限类型：0->目录；1->菜单；2->按钮（接口绑定权限）',
+  `uri` varchar(128) COMMENT '前端资源路径',
+  `enabled` tinyint(1) NOT NULL DEFAULT 1 COMMENT '启用状态；0->禁用；1->启用',
+  `sort` int(4) NOT NULL DEFAULT 0 COMMENT '排序',
+  `created_at` datetime NOT NULL COMMENT '创建时间'
+  `updated_at` datetime NOT NULL COMMENT '更新时间'
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='后台用户权限表';
+
+-- ----------------------------
+-- Table ums_role 后台用户角色表
+-- ----------------------------
+DROP TABLE IF EXISTS `ums_resource`;
+CREATE TABLE `ums_resource` (
+  `id` int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
+  `category_id` int(10) NOT NULL COMMENT '资源分类ID, ref->ums_resource_category',
+  `name` varchar(100) NOT NULL COMMENT '名称',
+  `url` varchar(200) NOT NULL COMMENT '资源URL',
+  `desc` varchar(256) COMMENT '描述',
+  `created_at` datetime NOT NULL COMMENT '创建时间'
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='后台资源表';
+
+-- ----------------------------
+-- Table ums_resource_category 资源分类表
+-- ----------------------------
+DROP TABLE IF EXISTS `ums_resource_category`;
+CREATE TABLE `ums_resource_category` (
+  `id` int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
+  `name` varchar(100) NOT NULL COMMENT '分类名称',
+  `sort` int(4) NOT NULL DEFAULT 0 COMMENT '排序',
+  `created_at` datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COMMENT='资源分类表';
 
 -- ----------------------------
 -- Table ums_role_menu_relation 后台角色菜单关系表
@@ -218,12 +245,40 @@ CREATE TABLE `ums_role` (
 DROP TABLE IF EXISTS `ums_role_menu_relation`;
 CREATE TABLE `ums_role_menu_relation` (
   id int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
-  `role_id` bigint(10) NOT NULL COMMENT '角色ID',
-  `menu_id` bigint(10) NOT NULL COMMENT '菜单ID'
+  `role_id` int(10) NOT NULL COMMENT '角色ID, ref->ums_role',
+  `menu_id` int(10) NOT NULL COMMENT '菜单ID, ref->ums_menu'
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='后台角色菜单关系表';
 
+-- ----------------------------
+-- Table ums_role_permission_relation 后台用户角色和权限关系表
+-- ----------------------------
+DROP TABLE IF EXISTS `ums_role_permission_relation`;
+CREATE TABLE `ums_role_permission_relation` (
+  `id` int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
+  `role_id` gint(10) NOT NULL COMMENT '角色ID, ref->ums_role',
+  `permission_id` int(10) NOT NULL COMMENT '角色ID, ref->ums_permission',
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='后台用户角色和权限关系表';
 
-/******************************/
-/********** 商品模块 **********/
-/******************************/
+-- ----------------------------
+-- Table structure for ums_role_resource_relation
+-- ----------------------------
+DROP TABLE IF EXISTS `ums_role_resource_relation`;
+CREATE TABLE `ums_role_resource_relation` (
+  `id` int(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
+  `role_id` int(10) NOT NULL COMMENT '角色ID, ref->ums_role',
+  `resource_id` int(10) NOT NULL COMMENT '资源ID, ref->ums_resource',
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='后台角色资源关系表';
 
+
+
+/****************************************************************************************************/
+/********************************************** 商品模块 ********************************************/
+/****************************************************************************************************/
+
+-- ----------------------------
+-- Table pms_product 商品信息表
+-- ----------------------------
+DROP TABLE IF EXISTS `pms_product`;
+CREATE TABLE `pms_product` (
+  `id` bigint(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='商品信息表';

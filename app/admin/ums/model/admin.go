@@ -13,7 +13,7 @@ type Admin struct {
 	Status    bool      `json:"status"`     // 帐号启用状态:0->禁用；1->启用
 	CreatedAt time.Time `json:"created_at"` // 创建时间
 	UpdatedAt time.Time `json:"updated_at"` // 更新时间
-	LoginAt   time.Time `json:"login_at"`   // 最后登录时间'
+	LoginAt   time.Time `json:"login_at"`   // 最后登录时间
 }
 
 // AdminInParam admin input param
