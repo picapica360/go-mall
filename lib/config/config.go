@@ -17,9 +17,10 @@ var (
 	extension = ".toml"
 )
 
-var conf *AppConfig // global
+var conf *AppConfig = &AppConfig{} // global
 
-func init() {
+// Init the config
+func Init() {
 	var once sync.Once
 	once.Do(func() {
 		decodeToml(configFilename(env.Env()), conf)

@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+
 	"net/http"
 
 	cmsendpoint "go-mall/app/admin/cms/endpoint"
@@ -23,33 +24,28 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var (
-	svcPort int
-	svcEnv  string
-)
-
 func main() {
-	flag.IntVar(&svcPort, "port", 5000, "set the service host port")
+	var svcEnv string
 	flag.StringVar(&svcEnv, "env", "", `set the service rumtime environment, like 'development','test','production'`)
 	flag.Parse()
 
+	// init config
 	env.SetEnv(svcEnv) // 覆盖环境变量中的值
+	config.Init()
+	conf := config.Conf()
+	fmt.Printf("config %+v\n", conf)
 
 	// only listening for pprof
 	go func() {
-		http.ListenAndServe(":6060", nil)
+		http.ListenAndServe(fmt.Sprintf(":%d", conf.App.PProfPort), nil)
 	}()
 
 	// init log
 	log.Register(log.NewConsoleAdapter())
 	log.Build()
 
-	// init config
-	conf := config.Conf()
-	log.Infof("config: %v\n", conf) // only for trace, development environment.
-
 	// service start
-	log.Info("Server starting ...")
+	fmt.Print("Server starting ...")
 
 	// init db context.
 	db := orm.NewDB(&conf.Database)
@@ -70,5 +66,5 @@ func main() {
 		Engine: engine,
 	})
 
-	log.Panic(engine.Run(fmt.Sprintf(":%d", svcPort))) // log if starting error.
+	log.Panic(engine.Run(fmt.Sprintf(":%d", conf.App.Port))) // log if starting error.
 }

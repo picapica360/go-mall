@@ -102,7 +102,6 @@ var DefaultEncoderConfig = zapcore.EncoderConfig{
 // DefaultLevelEnablerFunc implement zapcore.LevelEnabler.
 //  the minimal level for development is Debug, and others is Info.
 func DefaultLevelEnablerFunc() zap.LevelEnablerFunc {
-	// TODO: the minimal lever of Development is Debug, others is Info.
 	return func(level zapcore.Level) bool {
 		if env.IsDevelopment() {
 			return level >= zapcore.DebugLevel
