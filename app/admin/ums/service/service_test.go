@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"testing"
 
 	"go-mall/lib/database/orm"
@@ -27,15 +26,7 @@ func testNewService() Service {
 	return svc
 }
 
-func TestSvcBook(t *testing.T) {
+func TestSvcMember(t *testing.T) {
 	svc := testNewService()
 	defer svc.Close()
-
-	books, err := svc.Books(context.TODO())
-	if err != nil {
-		t.Error(err)
-	}
-	if len(books) == 0 {
-		t.Errorf("not found the book.")
-	}
 }

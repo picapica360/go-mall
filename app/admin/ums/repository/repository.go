@@ -44,6 +44,5 @@ type Repository interface {
 	Close()
 
 	// 业务
-	Books(c context.Context) (books []*model.Book, err error)
 	Member(c context.Context, username string) (member *model.Member, err error)
 }
