@@ -1,22 +1,16 @@
 package main
 
 import (
-	// "flag"
 	"fmt"
 
-	// "net/http"
-
-	cmsendpoint "go-mall/app/admin/cms/endpoint"
-	omsendpoint "go-mall/app/admin/oms/endpoint"
-	pmsendpoint "go-mall/app/admin/pms/endpoint"
-	smsendpoint "go-mall/app/admin/sms/endpoint"
-	umsendpoint "go-mall/app/admin/ums/endpoint"
+	cmsep "go-mall/app/admin/cms/endpoint"
+	omsep "go-mall/app/admin/oms/endpoint"
+	pmsep "go-mall/app/admin/pms/endpoint"
+	smsep "go-mall/app/admin/sms/endpoint"
+	umsep "go-mall/app/admin/ums/endpoint"
 
 	"go-mall/lib/hosting"
 	"go-mall/lib/log"
-
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 
 	_ "net/http/pprof"
 	// MySql driver
@@ -25,18 +19,19 @@ import (
 
 func main() {
 	// service start
-	fmt.Print("Server starting ...\n")
+	fmt.Println("Server starting ...")
 
-	err := hosting.WebHost.AddConsoleLogger().AddPProf().AddDB().AddRouter(func(engine *gin.Engine, db *gorm.DB) {
-		omsendpoint.Init(engine)
-		pmsendpoint.Init(engine)
-		cmsendpoint.Init(engine)
-		smsendpoint.Init(engine)
-		umsendpoint.Init(&umsendpoint.Config{
-			DB:     db,
-			Engine: engine,
-		})
-	}).Run()
-
-	log.Panic(err)
+	host := hosting.WebHost
+	host.AddConsoleLogger()
+	host.AddPProf()
+	host.AddDB()
+	host.AddHealth()
+	host.AddEndpoint(func(c hosting.Context) {
+		omsep.Init(c.Engine)
+		pmsep.Init(c.Engine)
+		cmsep.Init(c.Engine)
+		smsep.Init(c.Engine)
+		umsep.Init(&umsep.Config{Engine: c.Engine, DB: c.DB})
+	})
+	log.Panic(host.Run())
 }

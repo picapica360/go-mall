@@ -1,6 +1,7 @@
 package hosting
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"net/http"
@@ -17,13 +18,21 @@ import (
 
 // Host host
 type Host struct {
-	conf *config.AppConfig
-	db   *gorm.DB
+	C Context // Context
 
-	logFn   func()
-	routeFn func(*gin.Engine)
-	dbFn    func() *gorm.DB
-	pprofFn func()
+	conf *config.AppConfig
+
+	logFn      func()
+	endpointFn func(Context)
+	dbFn       func() *gorm.DB
+	healthFn   func(*gin.Engine)
+	pprofFn    func()
+}
+
+// Context Host Context
+type Context struct {
+	Engine *gin.Engine
+	DB     *gorm.DB
 }
 
 var (
@@ -88,11 +97,9 @@ func (h *Host) AddDB() *Host {
 	return h
 }
 
-// AddRouter add web router.
-func (h *Host) AddRouter(fn func(*gin.Engine, *gorm.DB)) *Host {
-	h.routeFn = func(engine *gin.Engine) {
-		fn(engine, h.db) // TODO: 思考如何处理 DbContext 参数
-	}
+// AddEndpoint add web endpoint.
+func (h *Host) AddEndpoint(fn func(c Context)) *Host {
+	h.endpointFn = fn
 	return h
 }
 
@@ -111,7 +118,34 @@ func (h *Host) AddPProf() *Host {
 	return h
 }
 
+// AddHealth add health check api.
+// note: check the database, redis, ES etc.
+func (h *Host) AddHealth() *Host {
+	h.healthFn = func(engine *gin.Engine) {
+		engine.GET("/health", func(c *gin.Context) {
+			type errModel struct {
+				Name string
+				Err  error
+			}
+			var errs []errModel
+			if h.C.DB != nil {
+				if err1 := h.C.DB.DB().PingContext(context.TODO()); err1 != nil {
+					errs = append(errs, errModel{"Database", err1})
+				}
+			}
+
+			if len(errs) > 0 {
+				c.JSON(http.StatusBadRequest, errs)
+			} else {
+				c.JSON(http.StatusOK, nil)
+			}
+		})
+	}
+	return h
+}
+
 // Run run the hosting
+// note: env->config->pprof->log->dbcontext->health->webhost
 func (h *Host) Run() (err error) {
 	env.SetEnv(*cliEnv) // override
 
@@ -131,22 +165,27 @@ func (h *Host) Run() (err error) {
 
 	// db context
 	if h.dbFn != nil {
-		db := h.dbFn()
+		h.C.DB = h.dbFn()
 		defer func() {
-			if db != nil {
-				defer db.Close()
+			if h.C.DB != nil {
+				defer h.C.DB.Close()
 			}
 		}()
 	}
 
 	// web host
-	engine := httpd.Default()
-	if h.routeFn != nil {
-		h.routeFn(engine)
+	h.C.Engine = httpd.Default()
+	if h.endpointFn != nil {
+		h.endpointFn(h.C)
 	}
 	port := h.conf.App.Port
 	if port == 0 {
 		port = defaultHostPort
 	}
-	return engine.Run(fmt.Sprintf(":%d", port))
+
+	if h.healthFn != nil {
+		h.healthFn(h.C.Engine)
+	}
+
+	return h.C.Engine.Run(fmt.Sprintf(":%d", port))
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"sync"
 
+	"go-mall/app/admin/ums/model"
 	"go-mall/app/admin/ums/repository"
 
 	"github.com/jinzhu/gorm"
@@ -48,4 +49,5 @@ type Service interface {
 	Close()
 
 	// 业务
+	Books(c context.Context) (books []*model.Book, err error) // only for test
 }

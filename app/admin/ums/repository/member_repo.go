@@ -7,9 +7,14 @@ import (
 )
 
 const (
-	_insertSQL = ``
-	_updateSQL = ``
+	_memberInsertSQL = ``
+	_memberUpdateSQL = ``
 )
+
+func (repo *repoImpl) Books(c context.Context) (books []*model.Book, err error) {
+	err = repo.db.Find(books).Error
+	return
+}
 
 // GetUserByID inherit: Repository.GetUserByID
 func (repo *repoImpl) GetMemberByID(c context.Context, id int64) (member *model.Member, err error) {

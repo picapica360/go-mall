@@ -2,6 +2,8 @@ package controller
 
 import (
 	"go-mall/app/admin/ums/service"
+
+	"go-mall/lib/mvc"
 )
 
 // Config config
@@ -11,6 +13,8 @@ type Config struct {
 
 // Controller controller
 type Controller struct {
+	mvc.Controller
+
 	svc service.Service
 }
 
