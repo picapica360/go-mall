@@ -16,12 +16,20 @@ type Admin struct {
 	LoginAt   time.Time `json:"login_at"`   // 最后登录时间
 }
 
-// AdminInParam admin input param
-type AdminInParam struct {
-	ID int64 `form:"id"`
-}
-
 // TableName return table name
 func (*Admin) TableName() string {
 	return tablePrefix + "admin"
+}
+
+// AdminParam admin 输入参数
+type AdminParam struct {
+	Username string `binding:"required"` // 用户名
+	Password string `binding:"required"` // 密码
+	Nickname string // 昵称
+	Icon     string // 头像
+	Email    string // 邮箱
+}
+
+// AdminResult admin 输出数据
+type AdminResult struct {
 }

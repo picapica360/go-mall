@@ -8,3 +8,7 @@ import (
 func (s *svcImpl) GetRoles(username string) (roles []*model.Role) {
 	return
 }
+
+func (s *svcImpl) Register(username string) (roles []*model.Role) {
+	return
+}

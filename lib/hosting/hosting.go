@@ -5,6 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
+	"os/signal"
+	"time"
 
 	"go-mall/lib/config"
 	"go-mall/lib/config/env"
@@ -146,7 +149,7 @@ func (h *Host) AddHealth() *Host {
 
 // Run run the hosting
 // note: env->config->pprof->log->dbcontext->health->webhost
-func (h *Host) Run() (err error) {
+func (h *Host) Run() {
 	env.SetEnv(*cliEnv) // override
 
 	// config
@@ -166,6 +169,7 @@ func (h *Host) Run() (err error) {
 	// db context
 	if h.dbFn != nil {
 		h.C.DB = h.dbFn()
+		// close the database
 		defer func() {
 			if h.C.DB != nil {
 				defer h.C.DB.Close()
@@ -187,5 +191,36 @@ func (h *Host) Run() (err error) {
 		h.healthFn(h.C.Engine)
 	}
 
-	return h.C.Engine.Run(fmt.Sprintf(":%d", port))
+	// h.C.Engine.Run(fmt.Sprintf(":%d", port))
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%d", port),
+		Handler: h.C.Engine,
+	}
+
+	// listen serve
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Infof("listen: %v", err)
+		}
+	}()
+
+	shutdown(srv)
+}
+
+// // wait for interrupt signal to close server (timeout: 5s)
+func shutdown(srv *http.Server) {
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
+	sig := <-quit
+	log.Infof("get a signal %s, stop the process", sig.String())
+
+	fmt.Println("Shutdown Server ...")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil && err != http.ErrServerClosed {
+		// note: do not call Fatal, because it will call os.Exit(),
+		// 	and the 'defer func' (include caller) will not be executed.
+		log.Infof("Server shutdown error: %v", err)
+	}
+	fmt.Println("Server exited")
 }

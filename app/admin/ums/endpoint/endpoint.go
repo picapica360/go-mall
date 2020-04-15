@@ -21,9 +21,17 @@ func Init(c *Config) {
 	}
 	ctl := controller.New(conf)
 	engine := c.Engine
-	router := engine.Group("/admin/ums")
+
+	r1 := engine.Group("/admin")
 	{
-		router.GET("/test/books", ctl.Books) // test
-		router.GET("/member", ctl.Member)    // get user info
+		r1.POST("/login", ctl.AdminLogin)
+		r1.GET("/info", nil)
+		r1.POST("/logout", ctl.AdminLogout)
+		r1.GET("/list", nil)
+		r1.POST("/register", ctl.AdminRegister)
+		r1.POST("/update", nil)
+		r1.POST("/delete", nil)
+		r1.GET("/role/:id", ctl.AdminRole)
+		r1.POST("/role/update", nil)
 	}
 }

@@ -10,7 +10,6 @@ import (
 	umsep "go-mall/app/admin/ums/endpoint"
 
 	"go-mall/lib/hosting"
-	"go-mall/lib/log"
 
 	_ "net/http/pprof"
 	// MySql driver
@@ -33,5 +32,5 @@ func main() {
 		smsep.Init(c.Engine)
 		umsep.Init(&umsep.Config{Engine: c.Engine, DB: c.DB})
 	})
-	log.Panic(host.Run())
+	host.Run()
 }
