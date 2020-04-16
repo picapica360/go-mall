@@ -29,7 +29,3 @@ type AdminParam struct {
 	Icon     string // 头像
 	Email    string // 邮箱
 }
-
-// AdminResult admin 输出数据
-type AdminResult struct {
-}

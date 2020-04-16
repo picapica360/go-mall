@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// Member 会员
+// Member 会员信息
 type Member struct {
 	ID          int64     `gorm:"primary_key" json:"id"`                 // id
 	Username    string    `json:"username"`                              // 用户名
@@ -17,7 +17,7 @@ type Member struct {
 	Birthday    time.Time `json:"birthday"`                              // 出生日期
 	City        string    `json:"city"`                                  // 所在城市
 	Job         string    `json:"job"`                                   // 职业
-	Signature   string    `gorm:"column:signature" json:"signature"`     // 个性签名
+	Signature   string    `json:"signature"`                             // 个性签名
 	SourceType  string    `gorm:"column:source_type" json:"source_type"` // 用户来源
 	Integration int       `json:"integration"`                           // 积分
 	Growth      int       `json:"growth"`                                // 成长值
@@ -25,8 +25,8 @@ type Member struct {
 	UpdatedAt   time.Time `json:"updated_at"`                            // 修改时间
 }
 
-// MemberInParam member input param
-type MemberInParam struct {
+// MemberParam member input param
+type MemberParam struct {
 }
 
 // TableName return table name

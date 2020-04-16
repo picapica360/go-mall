@@ -12,12 +12,12 @@ type Role struct {
 	CreatedAt time.Time `json:"created_at"` // 创建时间
 }
 
-// RoleInParam role input param
-type RoleInParam struct {
-	ID int `form:"id"`
-}
-
 // TableName return table name
 func (*Role) TableName() string {
 	return tablePrefix + "role"
+}
+
+// RoleParam role input param
+type RoleParam struct {
+	ID int `form:"id"`
 }

@@ -17,12 +17,12 @@ type Permission struct {
 	UpdatedAt time.Time `json:"updated_at"` // 更新时间
 }
 
-// PermissionInParam permission input param
-type PermissionInParam struct {
-	ID int `form:"id"`
-}
-
 // TableName return table name
 func (*Permission) TableName() string {
 	return tablePrefix + "permission"
+}
+
+// PermissionParam permission input param
+type PermissionParam struct {
+	ID int `form:"id"`
 }

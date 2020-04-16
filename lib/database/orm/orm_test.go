@@ -107,6 +107,30 @@ func TestInsert(t *testing.T) {
 	}
 }
 
+func TestInsert2(t *testing.T) {
+	db := testNewDB(t)
+	defer testCloseDB(db)
+
+	book := _book{
+		Name:      "C",
+		Author:    "Brian W. Kernighan & Dennis M. Ritchie",
+		Desc:      "The C Programming Language",
+		ISBN:      "9787111128069",
+		Pub:       s2t("2004-01-01"),
+		Amount:    30.99,
+		IsPutaway: true,
+		IsDeleted: false,
+	}
+
+	if err := db.Create(&book).Error; err != nil {
+		t.Error(err)
+	}
+
+	if book.ID == 0 {
+		t.Error("the primary_key is zero, must AUTO_INCREMENT.")
+	}
+}
+
 func TestMultiInsert(t *testing.T) {
 	db := testNewDB(t)
 	defer testCloseDB(db)

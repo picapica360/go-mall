@@ -133,7 +133,7 @@ func (h *Host) AddHealth() *Host {
 			var errs []errModel
 			if h.C.DB != nil {
 				if err1 := h.C.DB.DB().PingContext(context.TODO()); err1 != nil {
-					errs = append(errs, errModel{"Database", err1})
+					errs = append(errs, errModel{"database", err1})
 				}
 			}
 
@@ -172,7 +172,8 @@ func (h *Host) Run() {
 		// close the database
 		defer func() {
 			if h.C.DB != nil {
-				defer h.C.DB.Close()
+				fmt.Println("database closed")
+				h.C.DB.Close()
 			}
 		}()
 	}
@@ -214,13 +215,13 @@ func shutdown(srv *http.Server) {
 	sig := <-quit
 	log.Infof("get a signal %s, stop the process", sig.String())
 
-	fmt.Println("Shutdown Server ...")
+	fmt.Println("shutdown server ...")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil && err != http.ErrServerClosed {
 		// note: do not call Fatal, because it will call os.Exit(),
 		// 	and the 'defer func' (include caller) will not be executed.
-		log.Infof("Server shutdown error: %v", err)
+		log.Infof("server shutdown error: %v", err)
 	}
-	fmt.Println("Server exited")
+	fmt.Println("server exited")
 }
