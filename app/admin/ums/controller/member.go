@@ -7,7 +7,7 @@ import (
 )
 
 // Member 获取用户信息 API.
-func (ctl Controller) Member(ctx *gin.Context) {
+func (ctl *Controller) Member(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, ctl.OK("member"))
 }

@@ -14,6 +14,7 @@ require (
 	github.com/gorilla/sessions v1.2.0 // indirect
 	github.com/jinzhu/gorm v1.9.12
 	github.com/robfig/cron v1.2.0
+	github.com/stretchr/testify v1.4.0
 	go.uber.org/zap v1.14.1
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

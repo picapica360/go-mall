@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/stretchr/testify/assert"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -122,13 +123,10 @@ func TestInsert2(t *testing.T) {
 		IsDeleted: false,
 	}
 
-	if err := db.Create(&book).Error; err != nil {
-		t.Error(err)
-	}
+	err := db.Create(&book).Error
+	assert.Error(t, err)
 
-	if book.ID == 0 {
-		t.Error("the primary_key is zero, must AUTO_INCREMENT.")
-	}
+	assert.NotEqual(t, 0, book.ID, "the primary_key is zero, must AUTO_INCREMENT")
 }
 
 func TestMultiInsert(t *testing.T) {
