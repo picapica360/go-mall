@@ -1,9 +1,10 @@
 package controller
 
 import (
+	"time"
+
 	"go-mall/app/admin/ums/service"
 	"go-mall/lib/errcode"
-
 	"go-mall/lib/mvc"
 )
 
@@ -30,3 +31,10 @@ func New(c *Config) *Controller {
 func (ctl *Controller) BadRequest(err interface{}) map[string]interface{} {
 	return ctl.BadCode(errcode.InputParamsError, err)
 }
+
+const (
+	CookieName   = "admin_id"
+	CookeDomain  = "" // admin.picapica360.com
+	CookieMaxage = int(time.Hour * 2 / time.Second)
+	CookieSecure = false
+)

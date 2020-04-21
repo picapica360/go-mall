@@ -21,8 +21,8 @@ func (ctl *Controller) AdminRegister(c *gin.Context) {
 // AdminLogin -> POST /admin/login 管理员登录
 func (ctl *Controller) AdminLogin(c *gin.Context) {
 	type Login struct {
-		Username string
-		Password string
+		Username string `form:"username" binding:"required"`
+		Password string `form:"password" binding:"required"`
 	}
 	var input Login
 
@@ -30,11 +30,21 @@ func (ctl *Controller) AdminLogin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, ctl.BadRequest(err))
 		return
 	}
-	c.JSON(http.StatusOK, ctl.OK("member"))
+
+	// TODO: check login accout.
+
+	c.SetCookie(CookieName, input.Username, CookieMaxage, "/", CookeDomain, CookieSecure, true)
+	c.JSON(http.StatusOK, ctl.OKNull())
 }
 
 // AdminLogout -> POST /admin/logout 用户登出
 func (ctl *Controller) AdminLogout(c *gin.Context) {
+	if _, err := c.Cookie(CookieName); err != nil {
+
+	}
+
+	c.SetCookie(CookieName, "", -1, "/", CookeDomain, CookieSecure, true)
+
 	c.JSON(http.StatusOK, ctl.OKNull())
 }
 
