@@ -34,6 +34,7 @@ func main() {
 	})
 
 	host.UseDefaultCookieSession()
+	host.UseCookieAuthentication("/")
 
 	host.Run()
 }

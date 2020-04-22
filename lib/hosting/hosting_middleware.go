@@ -1,6 +1,7 @@
 package hosting
 
 import (
+	"go-mall/lib/net/http/middleware/auth"
 	"go-mall/lib/net/http/middleware/session"
 	"go-mall/lib/utils"
 
@@ -41,5 +42,16 @@ func (h *Host) UseDefaultCookieSession() *Host {
 
 	h.UseMiddleware(fn)
 
+	return h
+}
+
+// UseCookieAuthentication use cookie authentication middleware to gin http pipe.
+// ignoreRoutes -> route which not need be authenticated, regexp match.
+func (h *Host) UseCookieAuthentication(ignoreRoutes ...string) *Host {
+	var fn = func() gin.HandlerFunc {
+		opt := auth.CookieAuthOptions{IgnoreRoutes: ignoreRoutes}
+		return auth.CookieAuth(opt)
+	}
+	h.UseMiddleware(fn)
 	return h
 }

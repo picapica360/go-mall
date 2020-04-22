@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"go-mall/app/admin/ums/model"
-	"go-mall/lib/net/http/authentication"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,16 +32,14 @@ func (ctl *Controller) AdminLogin(c *gin.Context) {
 	}
 
 	// TODO: check login accout.
-	auth := authentication.NewCookieAuth(c)
-	auth.SignIn(authentication.Claim{"uid", "gang"}, authentication.Claim{"role", "admin,guest"})
+	ctl.SignIn(c, "gang.yang", "admin,guest")
 
 	c.JSON(http.StatusOK, ctl.OKNull())
 }
 
 // AdminLogout -> POST /admin/logout -> 用户登出
 func (ctl *Controller) AdminLogout(c *gin.Context) {
-	auth := authentication.NewCookieAuth(c)
-	auth.SignOut()
+	ctl.SignOut(c)
 
 	c.JSON(http.StatusOK, ctl.OKNull())
 }

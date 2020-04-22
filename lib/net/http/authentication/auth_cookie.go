@@ -6,37 +6,44 @@ import (
 )
 
 const (
+	// DefaultAuthCookieName default cookie name.
 	DefaultAuthCookieName = "github.com/picapica360/go-mall"
 )
 
+// AuthCookie AuthCookie model.
 type AuthCookie struct {
-	context *gin.Context
+	session sessions.Session
 }
 
 // NewCookieAuth new a cookie authentication.
 func NewCookieAuth(c *gin.Context) *AuthCookie {
 	return &AuthCookie{
-		context: c,
+		session: sessions.Default(c),
 	}
 }
 
 // SignIn signin
-func (a *AuthCookie) SignIn(claim ...Claim) {
-	session := sessions.Default(a.context)
-	session.Set(DefaultAuthCookieName, claim)
-	session.Save()
+func (auth *AuthCookie) SignIn(claim Claim) {
+	auth.session.Set(DefaultAuthCookieName, claim)
+	auth.session.Save()
 }
 
 // SignOut signout
-func (a *AuthCookie) SignOut() {
-	session := sessions.Default(a.context)
-	session.Delete(DefaultAuthCookieName)
-	session.Save()
+func (auth *AuthCookie) SignOut() {
+	auth.session.Delete(DefaultAuthCookieName) // think: use Clear() to remove all cookie ?
+	auth.session.Save()
 }
 
 // IsAuthenticated whether has authenticated.
-func (a *AuthCookie) IsAuthenticated() bool {
-	session := sessions.Default(a.context)
-	v := session.Get(DefaultAuthCookieName)
+func (auth *AuthCookie) IsAuthenticated() bool {
+	v := auth.session.Get(DefaultAuthCookieName)
 	return v != nil
+}
+
+// ClaimsIdentity get identity claims. if not exists, return nil
+func (auth *AuthCookie) ClaimsIdentity() Claim {
+	if v, ok := auth.session.Get(DefaultAuthCookieName).(Claim); ok {
+		return v
+	}
+	return nil
 }

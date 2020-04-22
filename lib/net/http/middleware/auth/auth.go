@@ -16,12 +16,12 @@ type CookieAuthOptions struct {
 
 // CookieAuth http cookie authentication middleware.
 // ignoreRoutes -> ignore route colletion.
-func CookieAuth(conf CookieAuthOptions) gin.HandlerFunc {
+func CookieAuth(opt CookieAuthOptions) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var hasIgnore bool
-		if len(conf.IgnoreRoutes) > 0 {
+		if len(opt.IgnoreRoutes) > 0 {
 			path := c.Request.URL.Path
-			for _, route := range conf.IgnoreRoutes {
+			for _, route := range opt.IgnoreRoutes {
 				if route != "" && checkIgnore(path, route) {
 					hasIgnore = true
 					break
