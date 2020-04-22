@@ -7,7 +7,10 @@ import (
 // Logger http logger middleware
 func Logger() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Process request
+		// TODO: log before handle.
+
 		c.Next()
+
+		// TODO: log after handle.
 	}
 }

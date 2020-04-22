@@ -4,23 +4,20 @@ import (
 	"net/http"
 	"regexp"
 
+	"go-mall/lib/net/http/authentication"
+
 	"github.com/gin-gonic/gin"
 )
 
-// CookieAuthConfig cookie config for auth.
-type CookieAuthConfig struct {
-	IgnoreRoutes       []string
-	Domain             string
-	Maxage             int
-	Secure, HTTPOnly   bool
-	AuthFailedRedirect string
+// CookieAuthOptions cookie options for auth.
+type CookieAuthOptions struct {
+	IgnoreRoutes []string
 }
 
 // CookieAuth http cookie authentication middleware.
 // ignoreRoutes -> ignore route colletion.
-func CookieAuth(conf CookieAuthConfig) gin.HandlerFunc {
+func CookieAuth(conf CookieAuthOptions) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// test ignoreRoutes
 		var hasIgnore bool
 		if len(conf.IgnoreRoutes) > 0 {
 			path := c.Request.URL.Path
@@ -33,8 +30,9 @@ func CookieAuth(conf CookieAuthConfig) gin.HandlerFunc {
 		}
 
 		if !hasIgnore {
-			if _, err := c.Cookie(""); err != nil {
-				c.AbortWithStatus(http.StatusUnauthorized)
+			aut := authentication.NewCookieAuth(c)
+			if !aut.IsAuthenticated() {
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"errmsg": "authenticated failure."})
 				return
 			}
 		}
@@ -49,7 +47,7 @@ func checkIgnore(path, route string) bool {
 		err error
 	)
 
-	if ok, err = regexp.Match(route, []byte(path)); err != nil {
+	if ok, err = regexp.MatchString(route, path); err != nil {
 		return false
 	}
 

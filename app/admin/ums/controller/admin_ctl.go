@@ -4,11 +4,12 @@ import (
 	"net/http"
 
 	"go-mall/app/admin/ums/model"
+	"go-mall/lib/net/http/authentication"
 
 	"github.com/gin-gonic/gin"
 )
 
-// AdminRegister -> POST /admin/register 管理员注册
+// AdminRegister -> POST /admin/register -> 管理员注册
 func (ctl *Controller) AdminRegister(c *gin.Context) {
 	var input model.AdminParam
 	if err := c.ShouldBind(&input); err != nil {
@@ -18,7 +19,7 @@ func (ctl *Controller) AdminRegister(c *gin.Context) {
 	c.JSON(http.StatusOK, ctl.OK("member"))
 }
 
-// AdminLogin -> POST /admin/login 管理员登录
+// AdminLogin -> POST /admin/login -> 管理员登录
 func (ctl *Controller) AdminLogin(c *gin.Context) {
 	type Login struct {
 		Username string `form:"username" binding:"required"`
@@ -32,33 +33,31 @@ func (ctl *Controller) AdminLogin(c *gin.Context) {
 	}
 
 	// TODO: check login accout.
+	auth := authentication.NewCookieAuth(c)
+	auth.SignIn(authentication.Claim{"uid", "gang"}, authentication.Claim{"role", "admin,guest"})
 
-	c.SetCookie(CookieName, input.Username, CookieMaxage, "/", CookeDomain, CookieSecure, true)
 	c.JSON(http.StatusOK, ctl.OKNull())
 }
 
-// AdminLogout -> POST /admin/logout 用户登出
+// AdminLogout -> POST /admin/logout -> 用户登出
 func (ctl *Controller) AdminLogout(c *gin.Context) {
-	if _, err := c.Cookie(CookieName); err != nil {
-
-	}
-
-	c.SetCookie(CookieName, "", -1, "/", CookeDomain, CookieSecure, true)
+	auth := authentication.NewCookieAuth(c)
+	auth.SignOut()
 
 	c.JSON(http.StatusOK, ctl.OKNull())
 }
 
-// AdminInfo -> GET /admin/info 获取管理员信息
+// AdminInfo -> GET /admin/info -> 获取管理员信息
 func (ctl *Controller) AdminInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, ctl.OKNull())
 }
 
-// AdminUpdate -> POST /admin/update/:id 管理人员信息更新
+// AdminUpdate -> POST /admin/update/:id -> 管理人员信息更新
 func (ctl *Controller) AdminUpdate(c *gin.Context) {
 	c.JSON(http.StatusOK, ctl.OKNull())
 }
 
-// AdminDelete -> POST /admin/delete/:id 管理人员信息删除
+// AdminDelete -> POST /admin/delete/:id -> 管理人员信息删除
 func (ctl *Controller) AdminDelete(c *gin.Context) {
 	c.JSON(http.StatusOK, ctl.OKNull())
 }

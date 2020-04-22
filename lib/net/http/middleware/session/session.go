@@ -5,14 +5,36 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Config session config
-type Config struct {
+// Options session option.
+type Options struct {
 	Secret string
 	Name   string
+
+	Cookie *CookieOption
+}
+
+// CookieOption cookie options.
+type CookieOption struct {
+	Path     string
+	Domain   string
+	MaxAge   int
+	Secure   bool
+	HTTPOnly bool
 }
 
 // New a cookie session middleware.
-func New(c *Config) gin.HandlerFunc {
-	store := sessions.NewCookieStore([]byte(c.Secret))
-	return sessions.Sessions(c.Name, store)
+func New(opt *Options) gin.HandlerFunc {
+	store := sessions.NewCookieStore([]byte(opt.Secret))
+	if copt := opt.Cookie; copt != nil {
+		sopt := sessions.Options{
+			Path:     copt.Path,
+			Domain:   copt.Domain,
+			MaxAge:   copt.MaxAge,
+			Secure:   copt.Secure,
+			HttpOnly: copt.HTTPOnly,
+		}
+		store.Options(sopt)
+	}
+
+	return sessions.Sessions(opt.Name, store)
 }

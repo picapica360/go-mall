@@ -32,5 +32,8 @@ func main() {
 		smsep.Init(c.Engine)
 		umsep.Init(&umsep.Config{Engine: c.Engine, DB: c.DB})
 	})
+
+	host.UseDefaultCookieSession()
+
 	host.Run()
 }

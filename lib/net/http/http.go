@@ -38,8 +38,8 @@ func setGinMode() {
 }
 
 func builtinMiddleware() []gin.HandlerFunc {
-	handlers := make([]gin.HandlerFunc, 0, 10)
+	var handlers []gin.HandlerFunc
 	handlers = append(handlers, gin.Recovery(), cors.Default())
-	// TODO: add gin middleware.
+
 	return handlers
 }

@@ -25,11 +25,12 @@ type Host struct {
 
 	conf *config.AppConfig
 
-	logFn      func()
-	endpointFn func(Context)
-	dbFn       func() *gorm.DB
-	healthFn   func(*gin.Engine)
-	pprofFn    func()
+	middlewareFn []func() gin.HandlerFunc
+	logFn        func()
+	endpointFn   func(Context)
+	dbFn         func() *gorm.DB
+	healthFn     func(*gin.Engine)
+	pprofFn      func()
 }
 
 // Context Host Context
@@ -180,6 +181,13 @@ func (h *Host) Run() {
 
 	// web host
 	h.C.Engine = httpd.Default()
+
+	if len(h.middlewareFn) > 0 {
+		for _, fn := range h.middlewareFn {
+			h.C.Engine.Use(fn())
+		}
+	}
+
 	if h.endpointFn != nil {
 		h.endpointFn(h.C)
 	}

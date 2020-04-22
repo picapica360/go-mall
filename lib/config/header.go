@@ -14,4 +14,14 @@ type AppConfig struct {
 	Version  string // the version of app.
 	Log      log.Config
 	Database orm.Config
+
+	Session SessionConfig
+}
+
+// SessionConfig session config.
+type SessionConfig struct {
+	Secret string // secret key for encrypt
+	Domain string // cookie domain, eg: "localhost"
+	MaxAge string // expiration
+	Secure bool   // whether use https
 }
