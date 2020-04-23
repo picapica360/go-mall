@@ -3,7 +3,6 @@ package http
 import (
 	"go-mall/lib/config/env"
 
-	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -39,7 +38,8 @@ func setGinMode() {
 
 func builtinMiddleware() []gin.HandlerFunc {
 	var handlers []gin.HandlerFunc
-	handlers = append(handlers, gin.Recovery(), cors.Default())
+
+	handlers = append(handlers, gin.Recovery())
 
 	return handlers
 }

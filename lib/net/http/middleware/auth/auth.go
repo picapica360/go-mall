@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"regexp"
 
-	"go-mall/lib/net/http/authentication"
+	"go-mall/lib/net/http/identity/aut"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,8 +30,8 @@ func CookieAuth(opt CookieAuthOptions) gin.HandlerFunc {
 		}
 
 		if !hasIgnore {
-			aut := authentication.NewCookieAuth(c)
-			if !aut.IsAuthenticated() {
+			auth := aut.NewCookieAuth(c)
+			if !auth.IsAuthenticated() {
 				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"errmsg": "authenticated failure."})
 				return
 			}

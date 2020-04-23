@@ -23,6 +23,6 @@ dsn = "mall:123456@(localhost)/mall?charset=utf8&parseTime=True&loc=Local"  # <u
 # idleTimeout = "30s"
 
 [session]
-secret = "picapica_secret"
+secret = "picapica360"
 domain = "localhost"
-maxage = "10m"  #  (s, m, h, d, w, M, y)
+maxage = "20s"  #  (s, m, h, d, w, M, y)

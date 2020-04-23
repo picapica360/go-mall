@@ -12,7 +12,7 @@ import (
 	"go-mall/lib/hosting"
 
 	_ "net/http/pprof"
-	// MySql driver
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -33,6 +33,7 @@ func main() {
 		umsep.Init(&umsep.Config{Engine: c.Engine, DB: c.DB})
 	})
 
+	host.UseCors()
 	host.UseDefaultCookieSession()
 	host.UseCookieAuthentication("/")
 

@@ -21,8 +21,8 @@ func (ctl *Controller) AdminRegister(c *gin.Context) {
 // AdminLogin -> POST /admin/login -> 管理员登录
 func (ctl *Controller) AdminLogin(c *gin.Context) {
 	type Login struct {
-		Username string `form:"username" binding:"required"`
-		Password string `form:"password" binding:"required"`
+		Username string `form:"username" json:"username" binding:"required"`
+		Password string `form:"password" json:"password" binding:"required"`
 	}
 	var input Login
 
@@ -32,7 +32,7 @@ func (ctl *Controller) AdminLogin(c *gin.Context) {
 	}
 
 	// TODO: check login accout.
-	ctl.SignIn(c, "gang.yang", "admin,guest")
+	ctl.SignIn(c, "picapica360", "admin,guest")
 
 	c.JSON(http.StatusOK, ctl.OKNull())
 }

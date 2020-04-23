@@ -4,7 +4,7 @@ import (
 	"go-mall/app/admin/ums/service"
 	"go-mall/lib/errcode"
 	"go-mall/lib/mvc"
-	"go-mall/lib/net/http/authentication"
+	"go-mall/lib/net/http/identity/aut"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,29 +33,25 @@ func (ctl *Controller) BadRequest(err interface{}) map[string]interface{} {
 	return ctl.BadCode(errcode.InputParamsError, err)
 }
 
-// SignIn 用户登录
+// SignIn 用户登录。其中，若有多个角色，可使用逗号分隔； uid 不能为空值。
 func (ctl *Controller) SignIn(c *gin.Context, uid, role string) {
-	auth := authentication.NewCookieAuth(c)
-	claim := map[string]string{"uid": uid, "role": role}
+	auth := aut.NewCookieAuth(c)
+	claim := aut.Claim{
+		aut.NameIdentity: uid,
+		aut.Role:         role,
+	}
 	auth.SignIn(claim)
 }
 
 // SignOut 用户登出
 func (ctl *Controller) SignOut(c *gin.Context) {
-	auth := authentication.NewCookieAuth(c)
+	auth := aut.NewCookieAuth(c)
 	auth.SignOut()
 }
 
 // UID 用户唯一标识，如用户名、邮件地址或手机号等。
-// 若没有值，那么则返回零值。
+// 若没有值，则返回零值。
 func (ctl *Controller) UID(c *gin.Context) string {
-	auth := authentication.NewCookieAuth(c)
-	claim := auth.ClaimsIdentity()
-	if claim != nil {
-		if v, ok := claim["uid"]; ok {
-			return v
-		}
-	}
-
-	return ""
+	auth := aut.NewCookieAuth(c)
+	return auth.ClaimsIdentity()
 }

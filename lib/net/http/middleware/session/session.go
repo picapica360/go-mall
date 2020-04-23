@@ -1,7 +1,8 @@
 package session
 
 import (
-	"github.com/gin-gonic/contrib/sessions"
+	"go-mall/lib/net/http/session"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,17 +25,17 @@ type CookieOption struct {
 
 // New a cookie session middleware.
 func New(opt *Options) gin.HandlerFunc {
-	store := sessions.NewCookieStore([]byte(opt.Secret))
+	store := session.NewCookieStore([]byte(opt.Secret))
 	if copt := opt.Cookie; copt != nil {
-		sopt := sessions.Options{
+		sopt := session.Options{
 			Path:     copt.Path,
 			Domain:   copt.Domain,
 			MaxAge:   copt.MaxAge,
 			Secure:   copt.Secure,
-			HttpOnly: copt.HTTPOnly,
+			HTTPOnly: copt.HTTPOnly,
 		}
 		store.Options(sopt)
 	}
 
-	return sessions.Sessions(opt.Name, store)
+	return session.Sessions(opt.Name, store)
 }

@@ -5,13 +5,14 @@ import (
 	"go-mall/lib/net/http/middleware/session"
 	"go-mall/lib/utils"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 // UseMiddleware add custom middleware to gin http pipe.
-func (h *Host) UseMiddleware(middlewareFn ...func() gin.HandlerFunc) *Host {
-	h.middlewareFn = append(h.middlewareFn, middlewareFn...)
-
+// With the func arg, it will lazy execute only when be used.
+func (h *Host) UseMiddleware(middlewareFn func() gin.HandlerFunc) *Host {
+	h.middlewareFn = append(h.middlewareFn, middlewareFn)
 	return h
 }
 
@@ -41,7 +42,6 @@ func (h *Host) UseDefaultCookieSession() *Host {
 	}
 
 	h.UseMiddleware(fn)
-
 	return h
 }
 
@@ -52,6 +52,36 @@ func (h *Host) UseCookieAuthentication(ignoreRoutes ...string) *Host {
 		opt := auth.CookieAuthOptions{IgnoreRoutes: ignoreRoutes}
 		return auth.CookieAuth(opt)
 	}
+
 	h.UseMiddleware(fn)
+	return h
+}
+
+// UseCors use cors middleware to gin http pipe.
+// origins -> the origins allowed, it will be “*” if is nil.
+func (h *Host) UseCors(origins ...string) *Host {
+	var fn = func() gin.HandlerFunc {
+		config := cors.DefaultConfig()
+		if len(origins) > 0 {
+			config.AllowOrigins = origins
+		} else {
+			config.AllowAllOrigins = true
+		}
+		config.AllowCredentials = true // allow send cookie when cross site.
+		return cors.New(config)
+	}
+
+	h.UseMiddleware(fn)
+	return h
+}
+
+// UseCorsFn use cors middleware to gin http pipe.
+func (h *Host) UseCorsFn(fn func(cors.Config) cors.Config) *Host {
+	var mid = func() gin.HandlerFunc {
+		config := fn(cors.DefaultConfig())
+		return cors.New(config)
+	}
+
+	h.UseMiddleware(mid)
 	return h
 }
