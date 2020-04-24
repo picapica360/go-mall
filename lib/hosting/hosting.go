@@ -202,8 +202,10 @@ func (h *Host) Run() {
 
 	// h.C.Engine.Run(fmt.Sprintf(":%d", port))
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", port),
-		Handler: h.C.Engine,
+		Addr:         fmt.Sprintf(":%d", port),
+		Handler:      h.C.Engine,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
 	}
 
 	// listen serve

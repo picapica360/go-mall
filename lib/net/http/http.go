@@ -2,6 +2,7 @@ package http
 
 import (
 	"go-mall/lib/config/env"
+	"go-mall/lib/net/http/validator"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,32 +14,30 @@ type Config struct {
 
 // New a gin engine.
 func New(c *Config) (engine *gin.Engine) {
-	handlers := builtinMiddleware()
-	handlers = append(handlers, c.Handlers...)
-
-	setGinMode()
-	engine = gin.New()
-	engine.Use(handlers...)
+	engine = makeEngine()
+	engine.Use(builtinMiddleware()...) // add builtin middleware
+	engine.Use(c.Handlers...)
 	return
 }
 
 // Default create gin engine, with middleware.
 func Default() (engine *gin.Engine) {
-	setGinMode()
-	engine = gin.New()
-	engine.Use(builtinMiddleware()...) // add middleware
+	engine = makeEngine()
+	engine.Use(builtinMiddleware()...) // add builtin middleware
 	return
 }
 
-func setGinMode() {
+func makeEngine() (engine *gin.Engine) {
 	if env.IsProduction() {
 		gin.SetMode("release") // debug or release
 	}
+	engine = gin.New()
+	validator.Register() // register custom validators.
+	return
 }
 
 func builtinMiddleware() []gin.HandlerFunc {
 	var handlers []gin.HandlerFunc
-
 	handlers = append(handlers, gin.Recovery())
 
 	return handlers
